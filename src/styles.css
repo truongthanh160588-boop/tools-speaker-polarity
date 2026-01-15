@@ -1,0 +1,624 @@
+/**
+ * Styles cho ToolsSpeakerPolarity
+ * Giao diện đơn giản, kỹ thuật, giống app iPhone
+ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #2a2a2a;
+  color: #ffffff;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #2a2a2a;
+}
+
+.header {
+  text-align: center;
+  padding: 20px 0;
+  border-bottom: 1px solid #444;
+}
+
+.header h1 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 300;
+  margin-bottom: 40px;
+  color: #ffffff;
+}
+
+.polarity-display {
+  width: 200px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1a1a1a;
+  border: 2px solid #444;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  transition: border-color 0.3s ease;
+}
+
+.polarity-display.positive {
+  border-color: #44ff44;
+  border-width: 3px;
+}
+
+.polarity-display.negative {
+  border-color: #ff4444;
+  border-width: 3px;
+}
+
+.polarity-display.unknown {
+  border-color: #888888;
+}
+
+.polarity-sign {
+  font-size: 120px;
+  font-weight: 300;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.info-text {
+  font-size: 14px;
+  color: #aaa;
+  margin: 20px 0;
+}
+
+.toggle-container {
+  margin: 20px 0;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.toggle-label input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin: 10px 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.button {
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #ffffff;
+  background-color: #444;
+  border: 1px solid #666;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 120px;
+}
+
+.button:hover:not(:disabled) {
+  background-color: #555;
+  border-color: #777;
+}
+
+.button:active:not(:disabled) {
+  background-color: #333;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button-active {
+  background-color: #0066cc;
+  border-color: #0088ff;
+}
+
+.button-active:hover {
+  background-color: #0055aa;
+}
+
+.footer {
+  text-align: center;
+  padding: 20px 0;
+  border-top: 1px solid #444;
+}
+
+.footer-text {
+  font-size: 14px;
+  color: #aaa;
+  font-weight: 400;
+}
+
+.phase-status {
+  font-size: 16px;
+  color: #aaa;
+  font-weight: 400;
+}
+
+/* Confidence và vote info */
+.confidence-info {
+  margin: 15px 0;
+  text-align: center;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+.confidence-info strong {
+  color: #44ff44;
+  font-size: 16px;
+}
+
+.vote-info {
+  margin-top: 5px;
+  font-size: 12px;
+  color: #aaa;
+}
+
+.warning-text {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background-color: #ffaa00;
+  color: #000000;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Status info */
+.status-info {
+  display: flex;
+  gap: 15px;
+  margin: 15px 0;
+  font-size: 13px;
+  color: #aaa;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.button-bluetooth-toggle {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #ffffff;
+  background-color: #444;
+  border: 1px solid #666;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.button-bluetooth-toggle:hover {
+  background-color: #555;
+  border-color: #777;
+}
+
+.button-bluetooth-toggle:active {
+  background-color: #333;
+}
+
+/* Mode và repetitions selector */
+.mode-selector,
+.repetitions-selector {
+  margin: 15px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.mode-selector label,
+.repetitions-selector label {
+  font-size: 14px;
+  color: #aaa;
+}
+
+/* Log box */
+.log-box {
+  margin-top: 20px;
+  padding: 12px;
+  background-color: #1a1a1a;
+  border: 1px solid #444;
+  border-radius: 8px;
+  max-width: 100%;
+  width: 100%;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.log-title {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.log-line {
+  font-size: 11px;
+  color: #aaa;
+  font-family: 'Courier New', monospace;
+  margin-bottom: 4px;
+  word-break: break-all;
+}
+
+.log-line:last-child {
+  margin-bottom: 0;
+}
+
+/* Test bands buttons */
+.test-bands {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 20px 0;
+  width: 100%;
+}
+
+.button-band {
+  width: 100%;
+  padding: 14px 24px;
+  font-size: 15px;
+}
+
+/* Progress info */
+.progress-info {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #1a1a1a;
+  border: 1px solid #444;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.progress-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 10px;
+}
+
+.pulse-result-mini {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  color: #aaa;
+}
+
+.polarity-mini {
+  font-size: 24px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 4px;
+}
+
+.polarity-mini.positive {
+  color: #44ff44;
+  background-color: rgba(68, 255, 68, 0.1);
+}
+
+.polarity-mini.negative {
+  color: #ff4444;
+  background-color: rgba(255, 68, 68, 0.1);
+}
+
+.pulse-result-mini .invalid {
+  color: #888;
+}
+
+/* Reports section */
+.reports-section {
+  margin-top: 30px;
+  width: 100%;
+}
+
+.reports-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.reports-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.reports-table thead {
+  background-color: #2a2a2a;
+}
+
+.reports-table th {
+  padding: 12px 8px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+  border-bottom: 2px solid #444;
+}
+
+.reports-table td {
+  padding: 10px 8px;
+  font-size: 12px;
+  color: #aaa;
+  border-bottom: 1px solid #333;
+}
+
+.reports-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.reports-table tbody tr:hover {
+  background-color: #222;
+}
+
+.polarity-display-inline {
+  font-size: 18px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.polarity-display-inline.positive {
+  color: #44ff44;
+  background-color: rgba(68, 255, 68, 0.1);
+}
+
+.polarity-display-inline.negative {
+  color: #ff4444;
+  background-color: rgba(255, 68, 68, 0.1);
+}
+
+.polarity-display-inline.unknown {
+  color: #888;
+}
+
+.status-good {
+  color: #44ff44;
+  font-weight: 600;
+}
+
+.status-ok {
+  color: #ffaa00;
+  font-weight: 600;
+}
+
+.status-fail {
+  color: #ff4444;
+  font-weight: 600;
+}
+
+/* Recommendations */
+.recommendations {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #1a1a1a;
+  border: 1px solid #444;
+  border-radius: 8px;
+}
+
+.recommendation-item {
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: #aaa;
+  line-height: 1.6;
+}
+
+.recommendation-item:last-child {
+  margin-bottom: 0;
+}
+
+.recommendation-item strong {
+  color: #ffffff;
+  margin-right: 8px;
+}
+
+/* Recommendations box - hiển thị đầy đủ 3 band */
+.recommendBox {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.18);
+  width: min(720px, 92vw);
+  max-width: 100%;
+}
+
+.recommendRow {
+  display: flex;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 13px;
+  color: #aaa;
+  line-height: 1.6;
+}
+
+.recommendRow:last-child {
+  border-bottom: none;
+}
+
+.recommendRow b {
+  min-width: 44px;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.recommendRow span {
+  flex: 1;
+  color: #aaa;
+}
+
+/* Bluetooth section */
+.bluetooth-section {
+  margin: 20px 0;
+  padding: 20px;
+  background-color: #1a1a1a;
+  border: 1px solid #444;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.bluetooth-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.bluetooth-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bluetooth-status {
+  font-size: 13px;
+  color: #aaa;
+  text-align: center;
+}
+
+.bluetooth-status strong {
+  color: #ffffff;
+}
+
+.bluetooth-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background-color: #2a2a2a;
+  border-radius: 6px;
+}
+
+.step-item {
+  font-size: 13px;
+  color: #aaa;
+  line-height: 1.6;
+}
+
+.step-item strong {
+  color: #ffffff;
+}
+
+.bluetooth-toggle {
+  margin: 10px 0;
+}
+
+.bluetooth-badge {
+  padding: 8px 12px;
+  background-color: #0066cc;
+  color: #ffffff;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.bluetooth-note {
+  padding: 12px;
+  background-color: #2a2a2a;
+  border-left: 3px solid #ffaa00;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #aaa;
+  line-height: 1.6;
+}
+
+.bluetooth-note strong {
+  color: #ffaa00;
+}
+
+/* Responsive cho mobile */
+@media (max-width: 480px) {
+  .app {
+    padding: 10px;
+  }
+
+  .title {
+    font-size: 28px;
+    margin-bottom: 30px;
+  }
+
+  .polarity-display {
+    width: 150px;
+    height: 150px;
+  }
+
+  .polarity-sign {
+    font-size: 90px;
+  }
+
+  .button {
+    min-width: 100px;
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  .button-group {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .button-group .button {
+    width: 100%;
+  }
+}
