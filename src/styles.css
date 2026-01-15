@@ -74,26 +74,22 @@ body {
   right: 12px;
   background: transparent;
   border: none;
-  color: #ffffff;
+  color: var(--text-main);
   cursor: pointer;
-  padding: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: background-color 0.2s ease;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 6px;
+  transition: all 0.2s ease;
 }
 
 .about-button:hover {
   background-color: rgba(255, 255, 255, 0.1);
+  color: var(--accent-blue);
 }
 
 .about-button:active {
   background-color: rgba(255, 255, 255, 0.2);
-}
-
-.about-button svg {
-  display: block;
 }
 
 .main {

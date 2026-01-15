@@ -232,20 +232,7 @@ function App() {
           aria-label="About"
           title="Thông tin liên hệ"
         >
-          <svg
-            width="22"
-            height="22"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="16" x2="12" y2="12"></line>
-            <line x1="12" y1="8" x2="12.01" y2="8"></line>
-          </svg>
+          About
         </button>
       </header>
 
@@ -459,7 +446,7 @@ function App() {
 
       <footer className="footer">
         <div className="footer-text">
-          Đứng 1–2m vẫn đo chính xác
+          Khuyến nghị quý khách để điện thoại gần loa 10-30cm độ chính xác cao.
         </div>
       </footer>
 
