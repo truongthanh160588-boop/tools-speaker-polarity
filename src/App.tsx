@@ -114,6 +114,67 @@ function App() {
 
 
   /**
+   * Reset ứng dụng về trạng thái ban đầu
+   */
+  const handleReset = async () => {
+    // Stop mic nếu đang chạy
+    if (isMicActive && engineRef.current) {
+      try {
+        engineRef.current.stopMic();
+      } catch (error) {
+        console.error('Error stopping mic:', error);
+      }
+    }
+
+    // Reset tất cả state
+    setIsMicActive(false);
+    setIsTestOutputEnabled(false);
+    setSignalStrength('Low');
+    setReports({});
+    setPulseProgress(null);
+    setCurrentPulseResult(null);
+    isTestingRef.current = false;
+
+    // Dispose và recreate AudioEngine để reset hoàn toàn
+    if (engineRef.current) {
+      engineRef.current.dispose();
+    }
+
+    // Tạo lại AudioEngine với callbacks mới
+    engineRef.current = new AudioEngine({
+      onSignalStrengthChange: (strength) => {
+        setSignalStrength(strength);
+      },
+      onBandReport: (report) => {
+        console.log('[REPORT]', report.band, report);
+        setReports((prev) => {
+          const updated = {
+            ...prev,
+            [report.band]: report,
+          };
+          console.log('[REPORT] Updated reports:', updated);
+          return updated;
+        });
+        setPulseProgress(null);
+        isTestingRef.current = false;
+      },
+      onPulseProgress: (pulse, total, result) => {
+        setPulseProgress({ current: pulse, total });
+        setCurrentPulseResult(result);
+      },
+      onLog: (_message) => {
+        // Logs ẩn theo yêu cầu
+      },
+      onError: (error) => {
+        console.error('AudioEngine error:', error);
+        alert(`Lỗi: ${error.message}`);
+        isTestingRef.current = false;
+        setPulseProgress(null);
+      },
+    });
+  };
+
+  /**
    * Test một band
    */
   const handleTestBand = async (band: BandTest) => {
@@ -193,6 +254,13 @@ function App() {
             className={isMicActive ? 'button button-active' : 'button'}
           >
             {isMicActive ? 'Stop Mic' : 'Start Mic'}
+          </button>
+          <button
+            onClick={handleReset}
+            className="button button-reset"
+            title="Reset ứng dụng về trạng thái ban đầu để tăng độ chính xác"
+          >
+            Reset
           </button>
         </div>
 
