@@ -555,6 +555,28 @@ body {
   line-height: 1.6;
 }
 
+.bluetooth-guide {
+  margin-top: 12px;
+  padding: 12px;
+  background: #1e1e1e;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.bluetooth-guide ol {
+  padding-left: 18px;
+}
+
+.bluetooth-guide li {
+  margin-bottom: 6px;
+}
+
+.bluetooth-guide ol li strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
 .step-item strong {
   color: #ffffff;
 }
@@ -574,11 +596,12 @@ body {
 }
 
 .bluetooth-note {
-  padding: 12px;
-  background-color: #2a2a2a;
-  border-left: 3px solid #ffaa00;
+  margin-top: 8px;
+  padding: 8px;
+  background: #2a2a00;
+  border-left: 4px solid #ffaa00;
   border-radius: 4px;
-  font-size: 12px;
+  font-size: 13px;
   color: #aaa;
   line-height: 1.6;
 }

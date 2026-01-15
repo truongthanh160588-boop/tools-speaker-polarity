@@ -201,10 +201,24 @@ function App() {
             <div className="bluetooth-status">
               Đang phát qua: <strong>Thiết bị hệ thống</strong> (có thể là Bluetooth/AirPlay)
             </div>
-            <div className="bluetooth-steps">
-              <div className="step-item">1. Vào <strong>Cài đặt</strong> → <strong>Bluetooth</strong> → Kết nối loa</div>
-              <div className="step-item">2. Chọn loa Bluetooth làm <strong>Output hệ thống</strong></div>
-              <div className="step-item">3. Quay lại app và bấm <strong>"Kiểm tra LOW/MID/HI"</strong></div>
+            <div className="bluetooth-guide">
+              <ol>
+                <li>
+                  Vào <strong>Cài đặt → Bluetooth</strong> và kết nối loa (ví dụ: <strong>Wuzhi Audio</strong>)
+                </li>
+                <li>
+                  <strong>Vuốt từ góc phải trên</strong> để mở <strong>Control Center</strong>
+                </li>
+                <li>
+                  <strong>Nhấn giữ ô Âm thanh</strong> → chọn <strong>Output → loa Bluetooth</strong>
+                </li>
+                <li>
+                  Quay lại app và bấm <strong>Kiểm tra LOW / MID / HI</strong>
+                </li>
+              </ol>
+              <div className="bluetooth-note">
+                ⚠️ Nếu không chọn Output trong Control Center, iOS sẽ tiếp tục phát ra loa máy.
+              </div>
             </div>
             <div className="bluetooth-toggle">
               <label className="toggle-label">
