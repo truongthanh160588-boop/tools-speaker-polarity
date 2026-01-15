@@ -17,6 +17,7 @@ function App() {
   const [pulseProgress, setPulseProgress] = useState<{ current: number; total: number } | null>(null);
   const [currentPulseResult, setCurrentPulseResult] = useState<PulseResult | null>(null);
   const [showAbout, setShowAbout] = useState(false);
+  const [uiMode, setUiMode] = useState<'BASIC' | 'EXPERT'>('BASIC');
   // Logs - ẩn theo yêu cầu, giữ lại để có thể bật lại sau
   // const [_logs, setLogs] = useState<string[]>([]);
 
@@ -249,6 +250,24 @@ function App() {
       </header>
 
       <main className="main">
+        {/* BASIC/EXPERT Mode Toggle */}
+        <div className="modeBar">
+          <button
+            className={`modeBtn ${uiMode === 'BASIC' ? 'active' : ''}`}
+            onClick={() => setUiMode('BASIC')}
+            type="button"
+          >
+            BASIC
+          </button>
+          <button
+            className={`modeBtn ${uiMode === 'EXPERT' ? 'active' : ''}`}
+            onClick={() => setUiMode('EXPERT')}
+            type="button"
+          >
+            EXPERT
+          </button>
+        </div>
+
         <SignalBar strength={signalStrength} />
 
         {/* Status info */}
@@ -334,19 +353,23 @@ function App() {
           </div>
         )}
 
-        {/* Báo cáo chi tiết - hiển thị khi có ít nhất 1 band đã đo */}
+        {/* Báo cáo chi tiết - PRO Style */}
         {(reports.LOW || reports.MID || reports.HI) && (
-          <div className="reports-section">
-            <h3 className="reports-title">Báo cáo kết quả</h3>
-            <table className="reports-table">
+          <div className={`reportCard ${isTestingRef.current ? 'pulseActive' : ''}`}>
+            <h3 className="reportTitle">Báo cáo kết quả</h3>
+            <table className="tablePro">
               <thead>
                 <tr>
                   <th>Band</th>
                   <th>Polarity</th>
                   <th>Vote</th>
-                  <th>Confidence</th>
-                  <th>SNR</th>
-                  <th>Level</th>
+                  {uiMode === 'EXPERT' && (
+                    <>
+                      <th>Confidence</th>
+                      <th>SNR</th>
+                      <th>Level</th>
+                    </>
+                  )}
                   <th>Status</th>
                 </tr>
               </thead>
@@ -355,51 +378,47 @@ function App() {
                   const report = reports[band];
                   if (!report) {
                     return (
-                      <tr key={band}>
+                      <tr key={band} className="rowBAD">
                         <td>{band}</td>
-                        <td colSpan={6} style={{ color: '#888', fontStyle: 'italic' }}>
+                        <td colSpan={uiMode === 'EXPERT' ? 6 : 3} style={{ color: 'rgba(229,231,235,0.5)', fontStyle: 'italic' }}>
                           Chưa đo
                         </td>
                       </tr>
                     );
                   }
+                  const rowCls =
+                    report.status === 'TỐT' ? 'rowOK' : report.status === 'ĐẠT' ? 'rowWARN' : 'rowBAD';
+                  const pillCls =
+                    report.status === 'TỐT' ? 'pillOK' : report.status === 'ĐẠT' ? 'pillWARN' : 'pillBAD';
+                  const badgeCls =
+                    report.polarity === '+'
+                      ? 'polarPlus'
+                      : report.polarity === '-'
+                        ? 'polarMinus'
+                        : 'polarNA';
                   return (
-                    <tr key={band}>
+                    <tr key={band} className={rowCls}>
                       <td>{band}</td>
                       <td>
-                        <span
-                          className={`polarity-display-inline ${
-                            report.polarity === '+'
-                              ? 'positive'
-                              : report.polarity === '-'
-                                ? 'negative'
-                                : 'unknown'
-                          }`}
-                        >
-                          {report.polarity}
-                        </span>
+                        <span className={`polarBadge ${badgeCls}`}>{report.polarity}</span>
                       </td>
                       <td>
                         +{report.votePlus}/-{report.voteMinus} ({report.validCount}/5)
                       </td>
-                      <td>{report.confidenceAvg.toFixed(0)}%</td>
-                      <td>{report.snrAvg.toFixed(1)} dB</td>
+                      {uiMode === 'EXPERT' && (
+                        <>
+                          <td>{report.confidenceAvg.toFixed(0)}%</td>
+                          <td>{report.snrAvg.toFixed(1)} dB</td>
+                          <td>
+                            {report.rmsAvgDbfs > -Infinity
+                              ? report.rmsAvgDbfs.toFixed(1)
+                              : '—'}{' '}
+                            dBFS
+                          </td>
+                        </>
+                      )}
                       <td>
-                        {report.rmsAvgDbfs > -Infinity
-                          ? report.rmsAvgDbfs.toFixed(1)
-                          : '—'}{' '}
-                        dBFS
-                      </td>
-                      <td
-                        className={
-                          report.status === 'TỐT'
-                            ? 'status-good'
-                            : report.status === 'ĐẠT'
-                              ? 'status-ok'
-                              : 'status-fail'
-                        }
-                      >
-                        {report.status}
+                        <span className={`statusPill ${pillCls}`}>{report.status}</span>
                       </td>
                     </tr>
                   );
@@ -410,7 +429,7 @@ function App() {
         )}
 
         {/* Recommendations - LUÔN hiển thị 3 dòng LOW/MID/HI */}
-        <div className="recommendBox">
+        <div className={`recommendBox ${isTestingRef.current ? 'pulseActive' : ''}`}>
           <div className="recommendRow">
             <b>LOW:</b>{' '}
             <span>{reports.LOW?.recommendation ?? 'Chưa đo.'}</span>
