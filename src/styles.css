@@ -40,12 +40,41 @@ body {
   text-align: center;
   padding: 20px 0;
   border-bottom: 1px solid #444;
+  position: relative;
 }
 
 .header h1 {
   font-size: 24px;
   font-weight: 600;
   color: #ffffff;
+}
+
+.about-button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.about-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.about-button:active {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.about-button svg {
+  display: block;
 }
 
 .main {
@@ -191,6 +220,83 @@ body {
   font-size: 14px;
   color: #aaa;
   font-weight: 400;
+}
+
+/* About Modal */
+.about-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+}
+
+.about-modal-content {
+  background: #0f172a;
+  border-radius: 16px;
+  padding: 24px;
+  width: 90%;
+  max-width: 420px;
+  color: #e5e7eb;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  border: 1px solid #334155;
+}
+
+.about-title {
+  margin-bottom: 12px;
+  color: #22d3ee;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.about-text {
+  margin-bottom: 16px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #e5e7eb;
+}
+
+.about-text:last-of-type {
+  margin-bottom: 24px;
+}
+
+.about-text strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.about-text a {
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.about-text a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+.about-close-button {
+  width: 100%;
+  padding: 10px 0;
+  border-radius: 10px;
+  border: none;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s ease;
+}
+
+.about-close-button:hover {
+  background: #1d4ed8;
+}
+
+.about-close-button:active {
+  background: #1e40af;
 }
 
 .phase-status {

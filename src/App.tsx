@@ -16,6 +16,7 @@ function App() {
   const [reports, setReports] = useState<Partial<Record<BandTest, BandReport>>>({});
   const [pulseProgress, setPulseProgress] = useState<{ current: number; total: number } | null>(null);
   const [currentPulseResult, setCurrentPulseResult] = useState<PulseResult | null>(null);
+  const [showAbout, setShowAbout] = useState(false);
   // Logs - ẩn theo yêu cầu, giữ lại để có thể bật lại sau
   // const [_logs, setLogs] = useState<string[]>([]);
 
@@ -224,6 +225,27 @@ function App() {
     <div className="app">
       <header className="header">
         <h1>ToolsSpeakerPolarity</h1>
+        <button
+          onClick={() => setShowAbout(true)}
+          className="about-button"
+          aria-label="About"
+          title="Thông tin liên hệ"
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+        </button>
       </header>
 
       <main className="main">
@@ -421,6 +443,67 @@ function App() {
           Đứng 1–2m vẫn đo chính xác
         </div>
       </footer>
+
+      {/* About Modal */}
+      {showAbout && (
+        <div
+          className="about-modal-overlay"
+          onClick={() => setShowAbout(false)}
+        >
+          <div
+            className="about-modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="about-title">Jackie Han</h2>
+
+            <p className="about-text">
+              🎧 Professional Sound Systems & Event Installations
+            </p>
+
+            <p className="about-text" style={{ marginBottom: 12 }}>
+              📱 Zalo / WhatsApp:
+              <br />
+              <a
+                href="https://zalo.me/84888888267"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: '#38bdf8', fontWeight: 600 }}
+              >
+                Zalo: (+84) 888 888 267
+              </a>
+              <br />
+              <a
+                href="https://wa.me/84888888267"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: '#22c55e', fontWeight: 600 }}
+              >
+                WhatsApp: (+84) 888 888 267
+              </a>
+            </p>
+
+            <p className="about-text" style={{ marginBottom: 16 }}>
+              📘 Facebook:
+              <br />
+              <a
+                href="https://www.facebook.com/JackieHan"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: '#60a5fa', fontWeight: 600 }}
+              >
+                Jackie Han
+              </a>
+            </p>
+
+            <button
+              onClick={() => setShowAbout(false)}
+              className="about-close-button"
+            >
+              Đóng
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
