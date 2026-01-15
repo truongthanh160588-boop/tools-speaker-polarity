@@ -18,8 +18,6 @@ function App() {
   const [currentPulseResult, setCurrentPulseResult] = useState<PulseResult | null>(null);
   // Logs - ẩn theo yêu cầu, giữ lại để có thể bật lại sau
   // const [_logs, setLogs] = useState<string[]>([]);
-  const [bluetoothMode, setBluetoothMode] = useState<boolean>(false);
-  const [showBluetoothSection, setShowBluetoothSection] = useState<boolean>(false);
 
   const engineRef = useRef<AudioEngine | null>(null);
   const isTestingRef = useRef<boolean>(false);
@@ -114,16 +112,6 @@ function App() {
     }
   };
 
-  /**
-   * Toggle Bluetooth mode
-   */
-  const handleToggleBluetoothMode = () => {
-    const newValue = !bluetoothMode;
-    setBluetoothMode(newValue);
-    if (engineRef.current) {
-      engineRef.current.setBluetoothMode(newValue);
-    }
-  };
 
   /**
    * Test một band
@@ -184,64 +172,7 @@ function App() {
         <div className="status-info">
           <div>Mic: {isMicActive ? 'ON' : 'OFF'}</div>
           <div>Output: {isTestOutputEnabled ? 'ON' : 'OFF'}</div>
-          <button
-            onClick={() => setShowBluetoothSection(!showBluetoothSection)}
-            className="button-bluetooth-toggle"
-            title="Bluetooth / AirPlay"
-          >
-            {showBluetoothSection ? 'Ẩn' : 'Bluetooth'}
-          </button>
         </div>
-
-        {/* Bluetooth / AirPlay section */}
-        {showBluetoothSection && (
-          <div className="bluetooth-section">
-          <h3 className="bluetooth-title">Bluetooth / AirPlay</h3>
-          <div className="bluetooth-info">
-            <div className="bluetooth-status">
-              Đang phát qua: <strong>Thiết bị hệ thống</strong> (có thể là Bluetooth/AirPlay)
-            </div>
-            <div className="bluetooth-guide">
-              <ol>
-                <li>
-                  Vào <strong>Cài đặt → Bluetooth</strong> và kết nối loa (ví dụ: <strong>Wuzhi Audio</strong>)
-                </li>
-                <li>
-                  <strong>Vuốt từ góc phải trên</strong> để mở <strong>Control Center</strong>
-                </li>
-                <li>
-                  <strong>Nhấn giữ ô Âm thanh</strong> → chọn <strong>Output → loa Bluetooth</strong>
-                </li>
-                <li>
-                  Quay lại app và bấm <strong>Kiểm tra LOW / MID / HI</strong>
-                </li>
-              </ol>
-              <div className="bluetooth-note">
-                ⚠️ Nếu không chọn Output trong Control Center, iOS sẽ tiếp tục phát ra loa máy.
-              </div>
-            </div>
-            <div className="bluetooth-toggle">
-              <label className="toggle-label">
-                <input
-                  type="checkbox"
-                  checked={bluetoothMode}
-                  onChange={handleToggleBluetoothMode}
-                />
-                <span>Chế độ Bluetooth (trễ cao)</span>
-              </label>
-            </div>
-            {bluetoothMode && (
-              <div className="bluetooth-badge">
-                Bluetooth Mode: ON (latency tolerant)
-              </div>
-            )}
-            <div className="bluetooth-note">
-              <strong>Lưu ý:</strong> Bluetooth chỉ làm trễ, không làm sai cực tính. 
-              Nếu báo "Tín hiệu thấp", hãy tăng âm lượng hoặc đưa điện thoại gần loa hơn.
-            </div>
-          </div>
-          </div>
-        )}
 
         <div className="info-text">Micro: Default</div>
 

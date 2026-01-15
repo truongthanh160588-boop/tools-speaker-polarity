@@ -62,16 +62,15 @@ export class AudioEngine {
   private isRecording: boolean = false;
   private recordingBuffer: Float32Array[] = [];
   private recordingStartTime: number = 0;
-  private pulseStartTimes: number[] = [];
   private callbacks: AudioEngineCallbacks;
-  private bluetoothMode: boolean = false;
+  // Bluetooth mode đã bị xóa khỏi UI, giữ lại để tương thích
+  private _bluetoothMode: boolean = false;
 
   // Cấu hình cố định
   private readonly SAMPLE_RATE = 48000; // Mục tiêu 48kHz
   private readonly RECORD_DURATION_NORMAL = 1.2; // Ghi 1.2s cho mỗi pulse (normal)
-  private readonly RECORD_DURATION_BLUETOOTH = 2.5; // Ghi 2.5s cho mỗi pulse (Bluetooth)
-  private readonly NOISE_WINDOW_END = 0.120; // 120ms cho noise baseline
-  private readonly SIGNAL_WINDOW_MS = 80; // 80ms sau arrival cho signal RMS
+  private readonly SIGNAL_WINDOW_MS = 25; // 25ms sau arrival cho signal RMS (giảm từ 80ms để tránh echo)
+  private readonly PEAK_SEARCH_WINDOW_MS = 20; // ±20ms để tìm peak thực sự quanh arrival
 
   // Band configurations
   private readonly BAND_CONFIGS: Record<BandTest, BandConfig> = {
@@ -180,17 +179,19 @@ export class AudioEngine {
 
   /**
    * Bật/tắt chế độ Bluetooth (chịu trễ cao)
+   * @deprecated Bluetooth feature đã bị xóa khỏi UI, method này giữ lại để tương thích
    */
-  setBluetoothMode(enabled: boolean): void {
-    this.bluetoothMode = enabled;
-    this.pushLog(`Bluetooth Mode: ${enabled ? 'ON' : 'OFF'}`);
+  setBluetoothMode(_enabled: boolean): void {
+    // Bluetooth feature đã bị xóa, method này không làm gì
+    // Giữ lại để tránh breaking changes
+    this._bluetoothMode = _enabled;
   }
 
   /**
-   * Lấy record duration dựa trên mode
+   * Lấy record duration (Bluetooth mode đã bị xóa, chỉ dùng normal)
    */
   private getRecordDuration(): number {
-    return this.bluetoothMode ? this.RECORD_DURATION_BLUETOOTH : this.RECORD_DURATION_NORMAL;
+    return this.RECORD_DURATION_NORMAL;
   }
 
   /**
@@ -222,7 +223,6 @@ export class AudioEngine {
 
     const config = this.BAND_CONFIGS[band];
     const now = this.audioContext.currentTime;
-    this.pulseStartTimes.push(now);
 
     // Tạo reference signal nếu chưa có hoặc band thay đổi
     if (!this.currentReference || this.currentBand !== band) {
@@ -328,7 +328,7 @@ export class AudioEngine {
    */
   private processPulse(
     recorded: Float32Array,
-    band: BandTest,
+    _band: BandTest,
     pulseIndex: number
   ): PulseResult {
     const sampleRate = this.audioContext?.sampleRate || 48000;
@@ -345,12 +345,8 @@ export class AudioEngine {
       };
     }
 
-    // Tính maxLag dựa trên mode và band
-    // Normal: 1.5s, Bluetooth: 1.8s (MID/HI) hoặc 2.2s (LOW)
-    let maxLagSeconds = 1.5;
-    if (this.bluetoothMode) {
-      maxLagSeconds = band === 'LOW' ? 2.2 : 1.8;
-    }
+    // Tính maxLag (Bluetooth mode đã bị xóa, chỉ dùng normal mode)
+    const maxLagSeconds = 1.5;
     const maxLag = Math.floor(maxLagSeconds * sampleRate);
     
     // Tạo copy để tránh type issue
@@ -363,7 +359,7 @@ export class AudioEngine {
     const correlationPeak = corrResult.peak;
 
     // Gate: correlation peak phải đủ cao
-    if (correlationPeak < 0.3) {
+    if (correlationPeak < 0.35) {
       this.pushLog(`Pulse ${pulseIndex + 1}: Correlation quá thấp (${correlationPeak.toFixed(2)})`);
       return {
         valid: false,
@@ -375,18 +371,33 @@ export class AudioEngine {
       };
     }
 
-    // Tính noise RMS (trước arrival)
-    const noiseEndSample = Math.min(
-      Math.floor(this.NOISE_WINDOW_END * sampleRate),
-      arrivalIndex
-    );
+    // Tính noise RMS (trước arrival) - đảm bảo window đủ dài
+    const noiseWindowMs = Math.min(100, (arrivalIndex / sampleRate) * 1000);
+    const noiseStartSample = Math.max(0, arrivalIndex - Math.floor((noiseWindowMs / 1000) * sampleRate));
+    const noiseEndSample = arrivalIndex;
     const noiseRms =
-      noiseEndSample > 0 ? calculateRmsRange(recorded, 0, noiseEndSample) : 0.001;
+      noiseEndSample > noiseStartSample
+        ? calculateRmsRange(recorded, noiseStartSample, noiseEndSample)
+        : 0.001;
 
-    // Tính signal RMS (sau arrival, trong cửa sổ 80ms)
-    const signalStartSample = arrivalIndex;
+    // Tìm peak thực sự trong cửa sổ nhỏ quanh arrival để detect polarity chính xác
+    const peakSearchWindowSamples = Math.floor((this.PEAK_SEARCH_WINDOW_MS / 1000) * sampleRate);
+    const peakSearchStart = Math.max(0, arrivalIndex - peakSearchWindowSamples);
+    const peakSearchEnd = Math.min(recorded.length, arrivalIndex + peakSearchWindowSamples);
+    
+    let peakValue = 0;
+    let peakIndex = arrivalIndex;
+    for (let i = peakSearchStart; i < peakSearchEnd; i++) {
+      if (Math.abs(recorded[i]) > Math.abs(peakValue)) {
+        peakValue = recorded[i];
+        peakIndex = i;
+      }
+    }
+
+    // Tính signal RMS (sau arrival, trong cửa sổ ngắn để tránh echo)
+    const signalStartSample = peakIndex; // Dùng peakIndex thay vì arrivalIndex
     const signalEndSample = Math.min(
-      arrivalIndex + Math.floor((this.SIGNAL_WINDOW_MS / 1000) * sampleRate),
+      peakIndex + Math.floor((this.SIGNAL_WINDOW_MS / 1000) * sampleRate),
       recorded.length
     );
     const signalRms =
@@ -410,8 +421,8 @@ export class AudioEngine {
       };
     }
 
-    // Detect polarity từ correlation peak value
-    const sign: '+' | '-' = corrResult.peakValue > 0 ? '+' : '-';
+    // Detect polarity từ peak thực sự (chính xác hơn)
+    const sign: '+' | '-' = peakValue > 0 ? '+' : '-';
 
     // Confidence: (snrDb - 14) / 20, clamp 0..1, * 100
     const confidence = clamp01((snrDb - 14) / 20) * 100;
@@ -469,7 +480,6 @@ export class AudioEngine {
     this.pushLog(`Test ${band} (${config.lowFreq}-${config.highFreq}Hz)`);
 
     const results: PulseResult[] = [];
-    this.pulseStartTimes = [];
 
     // Phát và thu 5 pulses
     const numPulses = 5;
@@ -638,9 +648,10 @@ export class AudioEngine {
 
   /**
    * Check if Bluetooth mode is enabled
+   * @deprecated Bluetooth feature đã bị xóa khỏi UI
    */
   isBluetoothMode(): boolean {
-    return this.bluetoothMode;
+    return this._bluetoothMode; // Bluetooth feature đã bị xóa, luôn trả về false
   }
 
   dispose(): void {
